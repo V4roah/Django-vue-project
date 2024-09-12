@@ -34,10 +34,25 @@
     >
       DERECHO
     </button>
+    <hr />
+    <h6>REACTIVIDAD LOS DATOS QUE SE MUESTRAN EN LA VISTA CAMBIA</h6>
+    <p>La variables 'prueba' vale {{ prueba }}</p>
+
+    <h5>
+      contador <strong>{{ contador }}</strong>
+    </h5>
+    <button class="btn btn-sm btn-success" @click="incrementar">
+      INCREMENTAR
+    </button>
+    <button class="btn btn-sm btn-warning" @click="decrementar">
+      DECREMENTAR
+    </button>
   </div>
 </template>
 
 <script setup>
+import { ref } from "vue";
+
 const hacerClick = (mensaje) => {
   console.log(mensaje);
 };
@@ -45,6 +60,18 @@ const hacerClick = (mensaje) => {
 const queBotonPresiono = (mensaje) => {
   console.log(mensaje);
 };
+
+const incrementar = () => {
+  contador.value++;
+};
+
+const decrementar = () => {
+  contador.value <= 0 ? (contador.value = 0) : contador.value--;
+};
+
+const prueba = 0;
+
+let contador = ref(0);
 </script>
 
 <style>
