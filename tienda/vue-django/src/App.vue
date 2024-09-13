@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <!-- navbar -->
-    <NavBarComponent />
+    <NavBarComponent v-if="$route.path !== '/'" />
+
+    <!-- navigation -->
+    <NavigationComponent v-if="$route.path === '/about'" />
+    <router-view />
+
+    <!-- footer -->
+    <FooterComponent />
   </div>
-
-  <!-- navigation -->
-  <NavigationComponent v-if="$route.path === '/about'" />
-  <router-view />
-
-  <!-- footer -->
-  <FooterComponent />
 </template>
 
 <script setup>

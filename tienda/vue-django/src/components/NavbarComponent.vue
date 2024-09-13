@@ -29,16 +29,40 @@
             >
           </li>
         </ul>
-        <form class="d-flex" role="search">
+        <form
+          class="d-flex"
+          role="search"
+          @submit.prevent="submitForm"
+          v-if="$route.path === '/'"
+        >
           <input
             class="form-control me-2"
             type="search"
             placeholder="Buscar..."
             aria-label="Search"
+            v-model="searchText"
           />
-          <button class="btn btn-outline-success" type="submit">Buscar</button>
+          <button
+            class="btn btn-outline-success"
+            type="submit"
+            @click="getSearch"
+          >
+            Buscar
+          </button>
         </form>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { ref, defineEmits } from "vue";
+
+const searchText = ref("");
+const emitSearch = defineEmits(["getSearchText"]);
+
+const getSearch = () => {
+  // console.log(searchText.value);
+  emitSearch("getSearchText", searchText.value);
+};
+</script>

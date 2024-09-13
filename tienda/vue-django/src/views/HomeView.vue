@@ -1,6 +1,27 @@
 <template>
+  <!-- NAVBAR -->
+  <NavbarComponent @getSearchText="search" />
+
   <!-- navigation -->
   <NavigationComponent @getCategoryId="categoryId" />
+
+  <div class="mb-3" v-if="searchTextRule">
+    <h3>
+      Productos de la categoria <strong>{{ searchTextRule }}</strong>
+    </h3>
+    <button class="btn btn-lg btn-warning" @click="resetFilter">
+      Mostrar todas las categorias
+    </button>
+    <div
+      class="alert alert-danger mt-3"
+      role="alert"
+      v-if="filteredProducts.length === 0"
+    >
+      No existen productos con el texto
+      <strong>{{ searchTextRule }}</strong>
+    </div>
+  </div>
+
   <div class="mb-3" v-if="categoryReceived">
     <h3>
       Productos de la categoria <strong>{{ categoryReceived }}</strong>
@@ -44,52 +65,68 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import axios from "axios";
 import NavigationComponent from "@/components/NavigationComponent.vue";
+import NavbarComponent from "@/components/NavbarComponent.vue";
+import { ref, onMounted } from "vue";
 
-export default {
-  components: {
-    NavigationComponent,
-  },
-  name: "HomeView",
-  data() {
-    return {
-      products: [],
-      filteredProducts: [],
-      allProducts: [],
-      categoryReceived: null,
-    };
-  },
+const products = ref([]);
+const filteredProducts = ref([]);
+const categoryReceived = ref(null);
+const searchTextRule = ref(null);
 
-  methods: {
-    categoryId(categoryId, categoryName) {
-      this.categoryReceived = categoryName;
-      if (categoryId) {
-        this.filteredProducts = this.allProducts.filter(
-          (product) => product.category === categoryId
-        );
-      } else {
-        this.filteredProducts = this.allProducts;
-      }
-    },
-    resetFilter() {
-      this.categoryReceived = null;
-      this.filteredProducts = this.allProducts;
-    },
-  },
-  mounted() {
-    axios
-      .get("http://localhost:8000/api/v1.0/products/")
-      .then((response) => {
-        this.allProducts = response.data;
-        this.filteredProducts = this.allProducts;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  },
+const search = (searchText) => {
+  categoryReceived.value = null;
+  searchTextRule.value = searchText;
+  // console.log("busqueda desde el homeview", searchTextRule.value);
+
+  if (searchText) {
+    filteredProducts.value = products.value.filter((product) => {
+      const productName = product.name.toLowerCase();
+      const productDescription = product.description.toLowerCase();
+      const searchTerm = searchText.toLowerCase();
+
+      return (
+        productName.includes(searchTerm) ||
+        productDescription.includes(searchTerm)
+      );
+    });
+  } else {
+    filteredProducts.value = products.value;
+  }
 };
+
+const categoryId = (categoryId, categoryName) => {
+  searchTextRule.value = null;
+
+  categoryReceived.value = categoryName;
+  if (categoryId) {
+    filteredProducts.value = products.value.filter(
+      (product) => product.category === categoryId
+    );
+  } else {
+    filteredProducts.value = products.value;
+  }
+};
+
+const resetFilter = () => {
+  categoryReceived.value = null;
+  searchTextRule.value = null;
+  filteredProducts.value = products.value;
+};
+
+onMounted(() => {
+  axios
+    .get("http://localhost:8000/api/v1.0/products/")
+    .then((response) => {
+      products.value = response.data;
+      filteredProducts.value = products.value;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
 </script>
 
 <style>

@@ -3,3 +3,5 @@
     <p>&copy; 2023 Codigo para principiantes</p>
   </footer>
 </template>
+
+<script setup></script>
