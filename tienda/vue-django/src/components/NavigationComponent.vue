@@ -72,3 +72,5 @@ button:first-child {
   }
 }
 </style>
+
+/* This is Vue2.0 logic */
